@@ -30,17 +30,13 @@ class Cart
         foreach ($this->items as $item) {
             $subTotal = $item['quantity'] * $item['price'];
 
-            if ($item['category'] == 'food') {
-                $subTotal = $subTotal * 1.05;
-            } else {
-                if ($item['category'] == 'electronics') {
-                    $subTotal = $subTotal * 1.20;
-                } else {
-                    $subTotal = $subTotal * 1.10;
-                }
-            }
-            
-            $total += $subTotal;
+            $multiplier = match ($item['category']) {
+                'food' => 1.05,
+                'electronics' => 1.20,
+                default => 1.10,
+            };
+
+            $total += $subTotal * $multiplier;
         }
 
         if ($this->discount > 0) {
@@ -50,14 +46,17 @@ class Cart
         return $total;
     }
 
-    public function getItemsByCategory($cat)
+    public function getItemsByCategory(string $category): array
     {
-        $res = [];
-        foreach ($this->items as $i) {
-            if ($i['cat'] == $cat) {
-                $res[] = $i;
+        $results = [];
+
+        foreach ($this->items as $item) {
+            if ($item['category'] == $category) {
+                $results[] = $item;
             }
         }
-        return $res;
+
+        return $results;
     }
+
 }
